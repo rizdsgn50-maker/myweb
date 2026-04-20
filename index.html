@@ -3,223 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubaidillah Hub - Glass Edition</title>
+    <title>Ubaidillah Hub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
     <style>
-        :root {
-            --bg-dark: #020617;
-            --accent: #0ea5e9;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-        }
-
+        :root { --bg: #020617; --accent: #0ea5e9; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); --text: #f8fafc; --text-dim: #94a3b8; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body {
-            background-color: var(--bg-dark);
-            background-image: radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.2) 0, transparent 50%);
-            color: var(--text-main); min-height: 100vh;
-        }
-
-        nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; height: 65px;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 20px;
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-        }
-        .nav-link { color: var(--text-dim); cursor: pointer; transition: 0.3s; }
-        .nav-link.active { color: var(--accent); transform: translateY(-5px); }
-
-        .page { display: none; padding: 20px; padding-bottom: 100px; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .glass-card {
-            background: var(--glass); backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 25px; margin-bottom: 20px;
-        }
-
-        .avatar-circle {
-            width: 100px; height: 100px; border-radius: 50%;
-            border: 3px solid var(--accent); object-fit: cover;
-            display: block; margin: 0 auto;
-        }
-
-        .menu-item {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 18px; display: flex; align-items: center;
-            gap: 15px; margin-bottom: 12px; cursor: pointer; text-decoration: none; color: inherit;
-        }
-
-        .cv-section h3 { font-size: 0.9rem; text-transform: uppercase; color: var(--accent); margin-bottom: 15px; }
-        .cv-box { border-left: 2px solid var(--accent); padding-left: 20px; margin-left: 10px; }
-        
-        .work-entry { margin-bottom: 15px; cursor: pointer; }
-        .work-details { 
-            display: none; background: rgba(255,255,255,0.03); 
-            padding: 12px; border-radius: 12px; margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);
-        }
-        .work-entry.active .work-details { display: block; }
-
-        #editor {
-            display: none; position: fixed; inset: 0; background: #fff; color: #1e293b;
-            z-index: 2000; padding: 25px; overflow-y: auto;
-        }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #64748b; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; }
-        .btn-save { background: var(--bg-dark); color: #fff; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        body { background: var(--bg); color: var(--text); height: 100vh; width: 100vw; overflow: hidden; }
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide { height: 100%; overflow-y: auto; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; padding-bottom: 60px; }
+        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 24px; padding: 25px; margin-bottom: 15px; text-align: center; }
+        .avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; object-fit: cover; }
+        .section-title { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 15px 10px; text-align: left; }
+        .item-box { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; overflow: hidden; text-align: left; }
+        .item-header { padding: 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .item-content { display: none; padding: 0 18px 18px 18px; font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 15px; }
+        .item-box.active .item-content { display: block; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        .catalog-item { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; }
+        .catalog-img { width: 100%; height: 120px; object-fit: cover; background: #1e293b; }
+        .catalog-text { padding: 8px; font-size: 0.75rem; text-align: center; color: var(--text-dim); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
+        .modal-content { background: #0f172a; margin: 20% auto; padding: 25px; border: 1px solid var(--accent); width: 85%; border-radius: 20px; }
+        .btn { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; margin-bottom: 10px; }
+        .swipe-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--accent); z-index: 10; pointer-events: none; opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <section id="p-home" class="page active">
-        <div class="glass-card" style="text-align: center;">
-            <img id="v-avatar" src="https://ui-avatars.com/api/?name=Rizky&background=0ea5e9&color=fff" class="avatar-circle">
-            <h1 id="v-name" style="margin-top:15px; font-weight:800;">Muhammad Rizky Ubaidillah</h1>
-            <p id="v-bio" style="color: var(--text-dim); margin-top: 5px;">Production Operator | Mechanical Enthusiast</p>
-        </div>
-        <div class="menu-item" onclick="show('p-cv')"><i data-lucide="file-text"></i><div><strong>Riwayat Hidup</strong></div></div>
-        <div class="menu-item" onclick="show('p-social')"><i data-lucide="info"></i><div><strong>Kontak & Media Sosial</strong></div></div>
-    </section>
+    <div class="swipe-hint">Geser <i data-lucide="move-horizontal" style="width:12px; vertical-align:middle"></i></div>
 
-    <section id="p-cv" class="page">
-        <div class="glass-card">
-            <div class="cv-section">
-                <h3>Pendidikan</h3>
-                <div class="cv-box">
-                    <strong>SMK 10 Nopember Jombang</strong>
-                    <p style="font-size:0.85rem; color:var(--text-dim);">TKR (Lulus 2024)</p>
-                </div>
-            </div>
-            <div class="cv-section" style="margin-top:25px;">
-                <h3>Pengalaman (Klik Nama)</h3>
-                <div class="cv-box">
-                    <div class="work-entry" onclick="this.classList.toggle('active')">
-                        <strong>PT Layo Seng Fong</strong>
-                        <p style="font-size:0.8rem; color:var(--accent);">Assembly Operator</p>
-                        <div class="work-details">
+    <div class="swiper">
+        <div class="swiper-wrapper">
+            
+            <div class="swiper-slide">
+                <div class="container">
+                    <div class="card">
+                        <img src="https://github.com/rizdsgn50-maker.png" class="avatar">
+                        <h2>M. Rizky Ubaidillah</h2>
+                        <p style="color: var(--text-dim);">Production Operator | Professional Manufacturing</p>
+                    </div>
+
+                    <div class="section-title">Pendidikan & Magang</div>
+                    <div class="item-box" onclick="this.classList.toggle('active')">
+                        <div class="item-header"><strong>SMK 10 Nopember Jombang</strong> <i data-lucide="chevron-down"></i></div>
+                        <div class="item-content">
+                            🎓 Teknik Kendaraan Ringan (TKR) - Lulus 2024.<br><br>
+                            <strong>Magang (PKL):</strong> CV. Boscho Pratama Group (3 Bulan).<br>
+                            • Sebagai Helper Mekanik: bongkar pasang komponen mesin dan pemeliharaan rutin kendaraan.
+                        </div>
+                    </div>
+
+                    <div class="section-title">Riwayat Pekerjaan</div>
+                    <div class="item-box" onclick="this.classList.toggle('active')">
+                        <div class="item-header"><strong>PT Layo Seng Fong</strong> <i data-lucide="chevron-down"></i></div>
+                        <div class="item-content">
                             📅 Okt 2024 - Sekarang<br>
-                            • Rakit wood flooring (400-600m²/hari)<br>
-                            • Maintenance mesin & QC produksi.
+                            📍 Assembly Operator (Wood Flooring)<br><br>
+                            • Bertanggung jawab melakukan perakitan material hingga menjadi produk wood flooring. <br>
+                          
+                            • Melakukan pengontrolan kualitas agar sesuai standar operasional perusahaan.<br>
+                            • Troubleshooting dasar dan maintenance rutin pada mesin-mesin pendukung operasional kerja.
                         </div>
                     </div>
-                    <div class="work-entry" onclick="this.classList.toggle('active')">
-                        <strong>CV. MegaLestari Plasindo</strong>
-                        <p style="font-size:0.8rem; color:var(--accent);">Operator Produksi</p>
-                        <div class="work-details">
+                    <div class="item-box" onclick="this.classList.toggle('active')">
+                        <div class="item-header"><strong>CV. Mega Lestari Plasindo</strong> <i data-lucide="chevron-down"></i></div>
+                        <div class="item-content">
                             📅 Apr 2024 - Sep 2024<br>
-                            • Operasikan mesin loom industri<br>
-                            • Catat data produksi harian & K3.
+                            📍 Operator Produksi (Loom Machine)<br><br>
+                            • Bertanggung jawab mengoperasikan mesin loom pembuatan karung plastik.<br>
+                            • Melakukan pencatatan data produksi harian secara detail.<br>
+                            • Menjaga standar keselamatan kerja (K3) di lingkungan pabrik.
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="swiper-slide">
+                <div class="container">
+                    <div class="card">
+                        <h2 style="color: var(--accent);">About Me</h2>
+                        <p style="text-align: left; font-size: 0.9rem; line-height: 1.6; margin-top: 10px;">
+                            "Based in Jombang. Industrial worker by day, mechanical enthusiast by night. Terbiasa dengan ritme kerja cepat di perakitan wood flooring dan punya minat tinggi dalam pengembangan bisnis mandiri"
+                            <br><br>
+                            "lebih baik gagal saat mencoba daripada menyesal tidak melakukan apa-apa"
+                        </p>
+                    </div>
+                    <div class="section-title">Skill & Passion</div>
+                    <div class="btn"><i data-lucide="wrench"></i> Troubleshooting</div>
+                    <div class="btn"><i data-lucide="trending-up"></i> Analisis </div>
+                    <div class="btn"><i data-lucide="bike"></i> Advanture</div>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="container">
+                    <div class="card">
+                        <h2 style="color: var(--accent);">View This</h2>
+                        <div class="catalog-grid">
+                            <div class="catalog-item" onclick="openModal('Bali-Denpasar', 'sebuah perjalanan yang membuahkan banyak sekali pelajaran,terutama tentang keikhlasan')">
+                                <img src="<https://ibb.ibb.co.com/p6M5Sj9L/quality-restoration-20260313180111263.jpg"class="catalog-img">
+                                <div class="catalog-text">QC Harian</div>
+                            </div>
+                            <div class="catalog-item" onclick="openModal('Tuning GSX', 'Hobi ngulik settingan ECU Juken 5+ buat dapet top speed yang pas.')">
+                                <img src="https://github.com/rizdsgn50-maker.png" class="catalog-img">
+                                <div class="catalog-text">Modif Motor</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-title">Kontak Sosial</div>
+                    <a href="https://www.instagram.com/rizdsgn50_/" class="btn"><i data-lucide="instagram"></i> Instagram</a>
+                    <a href="mailto:muhammadrizkyubaidillah2006@gmail.com" class="btn"><i data-lucide="mail"></i> Email</a>
+                </div>
+            </div>
+
         </div>
-        <div class="menu-item" onclick="show('p-home')"><i data-lucide="arrow-left"></i><span>Kembali</span></div>
-    </section>
-
-    <section id="p-social" class="page">
-        <div id="v-social-links"></div>
-        <div class="menu-item" onclick="show('p-home')"><i data-lucide="arrow-left"></i><span>Kembali</span></div>
-    </section>
-
-    <div id="editor">
-        <h2>Admin Hub</h2>
-        <div class="form-group"><label>Nama</label><input type="text" id="in-name"></div>
-        <div class="form-group"><label>Bio</label><input type="text" id="in-bio"></div>
-        <div class="form-group"><label>Foto Profil Baru</label><input type="file" id="in-avatar-file" accept="image/*"></div>
-        <div class="form-group"><label>Link Instagram</label><input type="text" id="in-ig"></div>
-        <div class="form-group"><label>Link TikTok</label><input type="text" id="in-tiktok"></div>
-        <div class="form-group"><label>Link Facebook</label><input type="text" id="in-fb"></div>
-        <button class="btn-save" onclick="saveData()">Simpan Perubahan</button>
-        <button onclick="closeEditor()" style="width:100%; border:none; background:none; margin-top:15px; color:#64748b;">Batal</button>
     </div>
 
-    <nav>
-        <div class="nav-link active" onclick="show('p-home', this)"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="openAdmin()"><i data-lucide="settings"></i></div>
-    </nav>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h3 id="mTitle" style="color:var(--accent); margin-bottom:10px;"></h3>
+            <p id="mDesc" style="color:var(--text-dim); font-size:0.9rem; margin-bottom:20px;"></p>
+            <button onclick="closeModal()" style="background:var(--accent); border:none; color:white; padding:10px 20px; border-radius:10px; width:100%">Tutup</button>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const db = new Dexie("UbaidillahFinalDB");
-        db.version(1).stores({ config: 'key, value' });
-
-        async function init() {
-            let res = await db.config.get('site_data');
-            const d = res ? res.value : {
-                name: "Muhammad Rizky Ubaidillah",
-                bio: "Production Operator | Mechanical Enthusiast",
-                avatar: "https://ui-avatars.com/api/?name=Rizky&background=0ea5e9&color=fff",
-                links: { ig: "#", tiktok: "#", fb: "#" }
-            };
-            render(d);
+        const swiper = new Swiper('.swiper', { direction: 'horizontal', loop: false, grabCursor: true });
+        lucide.createIcons();
+        function openModal(t, d) {
+            document.getElementById('mTitle').innerText = t;
+            document.getElementById('mDesc').innerText = d;
+            document.getElementById('myModal').style.display = "block";
         }
-
-        function render(d) {
-            document.getElementById('v-name').innerText = d.name;
-            document.getElementById('v-bio').innerText = d.bio;
-            document.getElementById('v-avatar').src = d.avatar;
-            document.getElementById('v-social-links').innerHTML = `
-                <a href="${d.links.ig}" target="_blank" class="menu-item"><i data-lucide="instagram"></i><span>Instagram</span></a>
-                <a href="${d.links.tiktok}" target="_blank" class="menu-item"><i data-lucide="music-2"></i><span>TikTok</span></a>
-                <a href="${d.links.fb}" target="_blank" class="menu-item"><i data-lucide="facebook"></i><span>Facebook</span></a>
-                <a href="mailto:muhammadrizkyubaidillah2006@gmail.com" class="menu-item"><i data-lucide="mail"></i><span>Email Business</span></a>
-            `;
-            lucide.createIcons();
-            // Isi form editor
-            document.getElementById('in-name').value = d.name;
-            document.getElementById('in-bio').value = d.bio;
-            document.getElementById('in-ig').value = d.links.ig;
-            document.getElementById('in-tiktok').value = d.links.tiktok;
-            document.getElementById('in-fb').value = d.links.fb;
-        }
-
-        async function saveData() {
-            let current = (await db.config.get('site_data'))?.value || { avatar: document.getElementById('v-avatar').src };
-            const newData = {
-                name: document.getElementById('in-name').value,
-                bio: document.getElementById('in-bio').value,
-                avatar: current.avatar,
-                links: {
-                    ig: document.getElementById('in-ig').value,
-                    tiktok: document.getElementById('in-tiktok').value,
-                    fb: document.getElementById('in-fb').value
-                }
-            };
-
-            const file = document.getElementById('in-avatar-file').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = async () => {
-                    newData.avatar = reader.result;
-                    await db.config.put({ key: 'site_data', value: newData });
-                    location.reload();
-                };
-            } else {
-                await db.config.put({ key: 'site_data', value: newData });
-                location.reload();
-            }
-        }
-
-        function show(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-        }
-
-        function openAdmin() { if(prompt("PIN Admin:") === "2703") document.getElementById('editor').style.display = 'block'; }
-        function closeEditor() { document.getElementById('editor').style.display = 'none'; }
-
-        init();
+        function closeModal() { document.getElementById('myModal').style.display = "none"; }
     </script>
 </body>
 </html>
