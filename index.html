@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riz.Ubaidillah • Japanese Forest Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
+        
+        :root {
+            --forest-deep: #0a1f14;
+            --bamboo: #1a3c2e;
+            --moss: #2d5a45;
+            --gold: #d4af77;
+            --cream: #f8f5ed;
+            --accent: #4a7043;
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; 
+        }
+        
+        .heading-serif { 
+            font-family: 'Playfair Display', Georgia, serif; 
+            letter-spacing: -2px; 
+        }
+
+        .glass { 
+            background: rgba(248, 245, 237, 0.95); 
+            backdrop-filter: blur(32px); 
+            border: 1px solid rgba(139, 94, 60, 0.12);
+            box-shadow: 0 8px 32px rgba(13, 40, 24, 0.08);
+        }
+        
+        .dark .glass { 
+            background: rgba(10, 31, 20, 0.92); 
+            border: 1px solid rgba(45, 90, 69, 0.35);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title { 
+            font-size: .65rem; 
+            font-weight: 900; 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            color: #1a3c2e; 
+        }
+        .dark .section-title { color: #d4af77; }
+        
+        .skill-card, .project-card, .mini-card { 
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+        
+        .nav-item.active { 
+            color: #1a3c2e; 
+            background: rgba(26, 60, 46, 0.12); 
+            border-radius: 9999px; 
+        }
+        .dark .nav-item.active { 
+            color: #d4af77; 
+            background: rgba(212, 175, 119, 0.18); 
+        }
+        
+        .premium-text {
+            background: linear-gradient(90deg, #1a3c2e, #2d5a45);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+        .dark .premium-text {
+            background: linear-gradient(90deg, #d4af77, #f8f5ed);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+
+        .scroll-progress {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 3px;
+            background: linear-gradient(to right, #1a3c2e, #d4af77);
+            z-index: 9999; 
+            transition: width 0.1s ease;
+        }
+
+        .filter-btn {
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .filter-btn.active {
+            background-color: #1a3c2e; 
+            color: #f8f5ed; 
+            border-color: #1a3c2e;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(26, 60, 46, 0.3);
+        }
+        .dark .filter-btn.active {
+            background-color: #d4af77; 
+            color: #0a1f14; 
+            border-color: #d4af77;
+            box-shadow: 0 4px 12px rgba(212, 175, 119, 0.3);
+        }
+
+        .leaf-particle {
+            position: absolute;
+            font-size: 13px;
+            opacity: 0.55;
+            pointer-events: none;
+            z-index: 1;
+            animation: bambooSway linear forwards;
+        }
+
+        @keyframes bambooSway {
+            0% { transform: translateY(-20px) rotate(-12deg); }
+            100% { transform: translateY(120vh) rotate(28deg); }
+        }
+
+        .stagger-animate {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeUpStagger 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes fadeUpStagger {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bamboo-border {
+            position: relative;
+        }
+        
+        .bamboo-border::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 2.75rem;
+            background: linear-gradient(135deg, #2d5a45, transparent, #4a7043);
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .dark .bamboo-border::before {
+            background: linear-gradient(135deg, #d4af77, transparent, #4a7043);
+            opacity: 0.25;
+        }
+
+        .achievement-badge {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .achievement-badge.unlocked {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 0 0 4px rgba(212, 175, 119, 0.25);
+        }
+
+        .tilt-card { 
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+
+        .morph-hover {
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
+                       box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .morph-hover:hover {
+            transform: scale(1.03) rotate(0.8deg);
+            box-shadow: 0 20px 40px rgba(10, 31, 20, 0.15);
+        }
+        
+        .dark .morph-hover:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-bottom {
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .nav-bottom.active {
+            color: #1a3c2e;
+            transform: translateY(-2px);
+        }
+        
+        .dark .nav-bottom.active {
+            color: #d4af77;
+        }
+
+        .nav-bottom.active i {
+            transform: scale(1.15);
+        }
+
+        .premium-shadow {
+            box-shadow: 0 25px 60px -15px rgb(10 31 20 / 0.25);
+        }
+
+        .dark .premium-shadow {
+            box-shadow: 0 25px 60px -15px rgb(0 0 0 / 0.45);
+        }
+
+        .sequential-reveal {
+            animation: sequentialPop 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+        }
+
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-[#f8f5ed] dark:bg-[#0a1f14] text-[#1a3c2e] dark:text-[#f8f5ed]">
+
+    <div id="scrollProgress" class="scroll-progress w-0"></div>
+
+    <div class="fixed top-0 left-0 right-0 z-50 bg-[#f8f5ed]/95 dark:bg-[#0a1f14]/95 backdrop-blur-3xl border-b border-[#2d5a45]/20">
+        <div class="max-w-[460px] mx-auto px-5 h-14 flex items-center justify-between">
+            <div onclick="goToSlide(0)" class="flex items-center gap-x-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#1a3c2e] to-[#2d5a45] flex items-center justify-center shadow-lg relative bamboo-border">
+                    <div class="w-full h-full rounded-2xl overflow-hidden">
+                        <img src="https://github.com/rizdsgn50-maker.png" 
+                             class="w-full h-full object-cover" 
+                             alt="Rizky Profile">
+                    </div>
+                    <div class="absolute -top-1 -right-1 text-[11px]">🎋</div>
+                </div>
+                <div>
+                    <div class="font-black tracking-tighter text-2xl">Riz.Ubaidillah</div>
+                    <div class="text-[9px] text-[#2d5a45] dark:text-[#d4af77] -mt-1 tracking-[1px]">JAPANESE FOREST EDITION</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-x-1.5">
+                <button onclick="downloadCV()" 
+                        class="hidden sm:flex items-center gap-x-2 px-4 py-1.5 text-xs font-bold rounded-2xl border border-[#2d5a45]/30 hover:bg-white dark:hover:bg-[#1a3c2e] active:scale-95 transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>CV</span>
+                </button>
+                
+                <button onclick="showKeyboardHelp()" 
+                        class="w-9 h-9 flex items-center justify-center rounded-2xl border border-[#2d5a45]/30 hover:bg-white dark:hover:bg-[#1a3c2e] transition-all">
+                    <i data-lucide="keyboard" class="w-4 h-4"></i>
+                </button>
+                
+                <button onclick="toggleSettingsMenu()" 
+                        class="w-10 h-10 flex items-center justify-center rounded-2xl border border-[#2d5a45]/30 hover:bg-white dark:hover:bg-[#1a3c2e] transition-all">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="swiper swiper-main pt-14 pb-20">
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+                <div class="max-w-[460px] mx-auto px-5 pt-3">
+                    
+                    <div class="glass border border-[#2d5a45]/20 rounded-[2.75rem] p-8 text-center shadow-2xl mb-7 relative overflow-hidden bamboo-border" id="heroSection">
+                        <canvas id="leafCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index:1; opacity:0.4"></canvas>
+                        
+                        <div class="relative z-10">
+                            <div class="relative inline-block mb-6 group">
+                                <div class="w-[142px] h-[142px] rounded-full p-1.5 bg-gradient-to-br from-[#1a3c2e] to-[#2d5a45] shadow-xl">
+                                    <img src="https://github.com/rizdsgn50-maker.png" 
+                                         class="w-full h-full rounded-full object-cover border-[6px] border-[#f8f5ed] dark:border-[#0a1f14] group-hover:scale-105 transition-transform duration-700" 
+                                         alt="Muhammad Rizky Ubaidillah Profile Photo">
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 bg-emerald-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full flex items-center gap-x-1.5 shadow-lg">
+                                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div> 
+                                    <span>ONLINE</span>
+                                </div>
+                            </div>
+                            
+                            <h1 class="text-[44px] leading-none font-black tracking-[-3px] mb-1 heading-serif" id="nameText"></h1>
+                            <p class="text-[#2d5a45] dark:text-[#d4af77] text-lg tracking-wide">@riz.ubaidillah</p>
+                            
+                            <div class="mt-5 text-left text-[15px] text-[#2d5a45] dark:text-[#d4d4c8] leading-relaxed max-w-[340px] mx-auto">
+                                Saya Muhammad Rizky Ubaidillah, kelahiran Jombang 2006. Moto hidup saya adalah 
+                                <span class="font-semibold">"Selesaikan hari ini, jangan menyesali hari kemarin apalagi ragu dengan hari esok."</span>
+                            </div>
+
+                            <div class="mt-5 inline-flex items-center gap-x-2 px-5 py-2 bg-white/80 dark:bg-[#1a3c2e]/80 rounded-2xl text-xs border border-[#2d5a45]/20">
+                                <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <span class="font-medium">Last active: <span id="liveTime"></span> WIB • Jombang</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-3 mt-7">
+                                <div class="bg-white/90 dark:bg-[#1a3c2e] rounded-2xl py-4 border border-[#2d5a45]/10 stagger-animate" style="animation-delay: 200ms">
+                                    <div class="text-3xl font-black text-[#1a3c2e] dark:text-[#d4af77] stat-number" data-target="3">0</div>
+                                    <div class="text-xs text-[#2d5a45] dark:text-[#d4af77]">PENGALAMAN INDUSTRI</div>
+                                </div>
+                                <div class="bg-white/90 dark:bg-[#1a3c2e] rounded-2xl py-4 border border-[#2d5a45]/10 stagger-animate" style="animation-delay: 400ms">
+                                    <div class="text-3xl font-black text-[#1a3c2e] dark:text-[#d4af77] stat-number" data-target="15">0</div>
+                                    <div class="text-xs text-[#2d5a45] dark:text-[#d4af77]">PROJECT SELESAI</div>
+                                </div>
+                                <div class="bg-white/90 dark:bg-[#1a3c2e] rounded-2xl py-4 border border-[#2d5a45]/10 stagger-animate" style="animation-delay: 600ms">
+                                    <div class="text-3xl font-black text-[#1a3c2e] dark:text-[#d4af77] stat-number" data-target="20">0</div>
+                                    <div class="text-xs text-[#2d5a45] dark:text-[#d4af77]">USIA TAHUN</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-7">
+                        <div class="section-title mb-3 px-1 flex items-center gap-x-2">
+                            <span>EXPERIENCE</span>
+                            <div class="flex-1 h-px bg-gradient-to-r from-[#2d5a45]/30 to-transparent"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="glass border border-[#2d5a45]/20 rounded-3xl p-5 mini-card morph-hover">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <div class="font-bold text-xl">PT. Layo Seng Fong</div>
+                                        <div class="text-xs text-[#2d5a45] dark:text-[#d4af77]">Assembly Operator • Okt 2024 — Sekarang</div>
+                                    </div>
+                                    <div class="px-3 py-1 bg-[#1a3c2e]/10 dark:bg-[#d4af77]/10 text-[#1a3c2e] dark:text-[#d4af77] text-xs font-bold rounded-full">CURRENT</div>
+                                </div>
+                                <div class="text-sm mt-3 text-[#2d5a45] dark:text-[#d4d4c8]">Merakit lembaran bahan woodflooring dengan presisi tinggi dan standar kualitas Jepang.</div>
+                            </div>
+                            
+                            <div class="glass border border-[#2d5a45]/20 rounded-3xl p-5 mini-card morph-hover">
+                                <div class="font-bold text-xl">CV. Mega Lestari Plasindo</div>
+                                <div class="text-xs text-[#2d5a45] dark:text-[#d4af77]">Operator Loom • Apr — Sep 2024</div>
+                                <div class="text-sm mt-3 text-[#2d5a45] dark:text-[#d4d4c8]">Mengoperasikan mesin rajut karung plastik dengan efisiensi 98%.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="openHireModal()" 
+                            class="w-full py-4 rounded-3xl font-black text-xl tracking-[1.5px] bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white flex items-center justify-center gap-x-3 active:scale-[0.985] shadow-xl hover:shadow-2xl transition-all">
+                        <span>HUBUNGI SAYA</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="max-w-[460px] mx-auto px-5 pt-4">
+                    <div class="section-title mb-4 px-1 flex justify-between items-center">
+                        <span>HARD SKILLS</span>
+                        <button onclick="showSkillChart()" 
+                                class="text-xs px-4 py-1.5 rounded-full border border-[#2d5a45]/40 text-[#1a3c2e] dark:text-[#d4af77] hover:bg-[#1a3c2e]/5 transition-all">LIHAT CHART</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <div onclick="showSkillModal('MS Office', 92, 'Expert level. Laporan, presentasi, data tracking — semuanya rapi dan profesional.')" 
+                             class="skill-card glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer tilt-card morph-hover">
+                            <div class="flex items-center gap-x-3 mb-4">
+                                <i data-lucide="monitor" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                <div class="font-bold">MS Office</div>
+                            </div>
+                            <div class="h-2.5 bg-[#d4d4c8] dark:bg-[#1a3c2e] rounded-full overflow-hidden">
+                                <div class="h-2.5 bg-gradient-to-r from-[#1a3c2e] to-[#d4af77] rounded-full skill-bar" style="width:92%"></div>
+                            </div>
+                            <div class="text-right text-xs mt-1 text-[#2d5a45]">92%</div>
+                        </div>
+                        
+                        <div onclick="showSkillModal('Video Editing', 87, 'Cinematic editing Premiere Pro + CapCut + DaVinci. Color grading & storytelling visual.')" 
+                             class="skill-card glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer tilt-card morph-hover">
+                            <div class="flex items-center gap-x-3 mb-4">
+                                <i data-lucide="video" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                <div class="font-bold">Video Editing</div>
+                            </div>
+                            <div class="h-2.5 bg-[#d4d4c8] dark:bg-[#1a3c2e] rounded-full overflow-hidden">
+                                <div class="h-2.5 bg-gradient-to-r from-[#1a3c2e] to-[#d4af77] rounded-full skill-bar" style="width:87%"></div>
+                            </div>
+                            <div class="text-right text-xs mt-1 text-[#2d5a45]">87%</div>
+                        </div>
+                        
+                        <div onclick="showSkillModal('Troubleshooting', 83, 'Analisis mendalam & fix trouble mesin & sistem dengan cepat dan akurat.')" 
+                             class="skill-card glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer tilt-card morph-hover">
+                            <div class="flex items-center gap-x-3 mb-4">
+                                <i data-lucide="settings" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                <div class="font-bold">Troubleshooting</div>
+                            </div>
+                            <div class="h-2.5 bg-[#d4d4c8] dark:bg-[#1a3c2e] rounded-full overflow-hidden">
+                                <div class="h-2.5 bg-gradient-to-r from-[#1a3c2e] to-[#d4af77] rounded-full skill-bar" style="width:83%"></div>
+                            </div>
+                            <div class="text-right text-xs mt-1 text-[#2d5a45]">83%</div>
+                        </div>
+                        
+                        <div onclick="showSkillModal('Data Entry', 96, 'Cepat, akurat, dan terstruktur. 10.000+ data entry tanpa kesalahan.')" 
+                             class="skill-card glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer tilt-card morph-hover">
+                            <div class="flex items-center gap-x-3 mb-4">
+                                <i data-lucide="database" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                <div class="font-bold">Data Entry</div>
+                            </div>
+                            <div class="h-2.5 bg-[#d4d4c8] dark:bg-[#1a3c2e] rounded-full overflow-hidden">
+                                <div class="h-2.5 bg-gradient-to-r from-[#1a3c2e] to-[#d4af77] rounded-full skill-bar" style="width:96%"></div>
+                            </div>
+                            <div class="text-right text-xs mt-1 text-[#2d5a45]">96%</div>
+                        </div>
+                    </div>
+
+                    <div class="section-title mb-3 px-1">SOFT SKILLS & ACHIEVEMENTS</div>
+                    <div class="grid grid-cols-4 gap-2 mb-8">
+                        <div onclick="unlockAchievement(this, 'videography')" class="achievement-badge locked glass border border-[#2d5a45]/20 rounded-2xl p-3 text-center cursor-pointer" data-id="videography">
+                            <div class="text-3xl mb-1">🎬</div>
+                            <div class="text-[10px] font-bold">Videography</div>
+                            <div class="text-[8px] text-[#2d5a45]">Expert</div>
+                        </div>
+                        <div onclick="unlockAchievement(this, 'mesin')" class="achievement-badge locked glass border border-[#2d5a45]/20 rounded-2xl p-3 text-center cursor-pointer" data-id="mesin">
+                            <div class="text-3xl mb-1">🏍️</div>
+                            <div class="text-[10px] font-bold">Mesin & Touring</div>
+                            <div class="text-[8px] text-[#2d5a45]">Advanced</div>
+                        </div>
+                        <div onclick="unlockAchievement(this, 'sosial')" class="achievement-badge locked glass border border-[#2d5a45]/20 rounded-2xl p-3 text-center cursor-pointer" data-id="sosial">
+                            <div class="text-3xl mb-1">👥</div>
+                            <div class="text-[10px] font-bold">Public Speaking</div>
+                            <div class="text-[8px] text-[#2d5a45]">Pro</div>
+                        </div>
+                        <div onclick="unlockAchievement(this, 'e-commerce')" class="achievement-badge locked glass border border-[#2d5a45]/20 rounded-2xl p-3 text-center cursor-pointer" data-id="e-commerce">
+                            <div class="text-3xl mb-1">🛒</div>
+                            <div class="text-[10px] font-bold">E-commerce</div>
+                            <div class="text-[8px] text-[#2d5a45]">Growing</div>
+                        </div>
+                    </div>
+
+                    <div class="section-title mb-4 px-1">HOBI & PASSION</div>
+                    <div class="space-y-3">
+                        <div onclick="showInterestModal('Touring & Adventure', 'Selalu ada cerita di setiap kilometernya. Solo riding adalah meditasi saya.')" 
+                             class="glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer mini-card morph-hover">
+                            <div class="flex gap-x-4">
+                                <div class="w-12 h-12 rounded-2xl bg-[#1a3c2e]/10 flex items-center justify-center">
+                                    <i data-lucide="bike" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Touring & Adventure</div>
+                                    <div class="text-xs text-[#2d5a45]">Solo riding • 15.000+ km</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div onclick="showInterestModal('Visual Storytelling', 'Visualisasikan pengalaman, karena mungkin suatu saat kamu hanya bisa mengenang tanpa mengulang.')" 
+                             class="glass border border-[#2d5a45]/20 rounded-3xl p-5 cursor-pointer mini-card morph-hover">
+                            <div class="flex gap-x-4">
+                                <div class="w-12 h-12 rounded-2xl bg-[#1a3c2e]/10 flex items-center justify-center">
+                                    <i data-lucide="camera" class="w-6 h-6 text-[#1a3c2e]"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Visual Storytelling</div>
+                                    <div class="text-xs text-[#2d5a45]">Short film • Cinematic Video</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="max-w-[460px] mx-auto px-5 pt-4">
+                    <div class="flex justify-between mb-3 px-1 items-center">
+                        <div class="section-title">PROJECTS</div>
+                        <button onclick="showAllProjectsModal()" class="text-xs text-[#1a3c2e] dark:text-[#d4af77] flex items-center gap-x-1">LIHAT SEMUA <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+                    </div>
+                    
+                    <div class="mb-3 flex gap-2 overflow-x-auto pb-1">
+                        <button onclick="filterProjects('all')" class="filter-btn active px-5 py-1.5 text-xs font-bold rounded-2xl border border-[#2d5a45]/30">ALL</button>
+                        <button onclick="filterProjects('VIDEO')" class="filter-btn px-5 py-1.5 text-xs font-bold rounded-2xl border border-[#2d5a45]/30">VIDEO</button>
+                        <button onclick="filterProjects('BRAND')" class="filter-btn px-5 py-1.5 text-xs font-bold rounded-2xl border border-[#2d5a45]/30">BRAND</button>
+                        <button onclick="filterProjects('WORKSHOP')" class="filter-btn px-5 py-1.5 text-xs font-bold rounded-2xl border border-[#2d5a45]/30">WORKSHOP</button>
+                    </div>
+                    
+                    <input id="projectSearch" onkeyup="filterProjects()" placeholder="Cari project..." 
+                           class="w-full mb-4 px-5 py-3 text-sm rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e] focus:outline-none focus:border-[#d4af77]">
+                    
+                    <div id="projectsContainer" class="space-y-4">
+                        </div>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="max-w-[460px] mx-auto px-5 pt-4">
+                    <div class="section-title mb-4 px-1">OFFICIAL STORE</div>
+                    
+                    <div class="glass border border-[#2d5a45]/20 rounded-[2.75rem] p-8 text-center mb-6 premium-shadow">
+                        <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1a3c2e] to-[#2d5a45] flex items-center justify-center mb-6 shadow-xl">
+                            <i data-lucide="shopping-bag" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="font-black text-4xl tracking-tighter">LLorenzio.id</div>
+                        <p class="text-sm text-[#2d5a45] mt-1">"Inner Sovereignty"</p>
+                        
+                        <a href="https://llorenziostore.vercel.app/" target="_blank" 
+                           class="mt-7 block py-4 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-black rounded-3xl active:scale-[0.985]">
+                            VISIT STORE →
+                        </a>
+                    </div>
+                    
+                    <div onclick="openPortal()" class="glass border border-[#2d5a45]/20 rounded-[2.75rem] p-7 text-center cursor-pointer mini-card morph-hover">
+                        <i data-lucide="sparkles" class="w-8 h-8 mx-auto mb-4 text-[#1a3c2e]"></i>
+                        <div class="font-bold">"Lebih baik gagal saat mencoba<br>daripada menyesal tidak melakukan apa-apa."</div>
+                        <div class="text-xs text-[#2d5a45] mt-3">— Personal Mantra</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="max-w-[460px] mx-auto px-5 pt-4">
+                    <div class="section-title mb-4 px-1 flex justify-between items-center">
+                        <span>TOURING AGENDA</span>
+                        <span class="text-xs bg-emerald-100 dark:bg-emerald-900 text-emerald-700 px-3 py-1 rounded-full font-bold">OPEN FOR 2026</span>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div onclick="openMapModal('Bali')" class="glass border border-[#2d5a45]/20 rounded-3xl overflow-hidden cursor-pointer mini-card morph-hover">
+                            <div class="h-44 relative">
+                                <img src="github-bali.jpg" class="w-full h-full object-cover" alt="Bali Touring Route">
+                                <div class="absolute inset-0 bg-gradient-to-b from-black/10 to-black/70"></div>
+                                <div class="absolute bottom-4 left-5 text-white">
+                                    <div class="font-black text-3xl">BALI</div>
+                                    <div class="text-xs">±420 km • 8–10 jam</div>
+                                </div>
+                                <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 text-[#1a3c2e] text-xs font-bold rounded-full">RECOMMENDED</div>
+                            </div>
+                            <div class="px-5 py-4 flex justify-between text-sm">
+                                <div>Jombang → Denpasar</div>
+                                <i data-lucide="arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div onclick="openMapModal('Bromo')" class="glass border border-[#2d5a45]/20 rounded-3xl overflow-hidden cursor-pointer mini-card morph-hover">
+                            <div class="h-44 relative">
+                                <img src="github-bromo.jpg" class="w-full h-full object-cover" alt="Bromo Sunrise">
+                                <div class="absolute inset-0 bg-gradient-to-b from-black/10 to-black/70"></div>
+                                <div class="absolute bottom-4 left-5 text-white">
+                                    <div class="font-black text-3xl">TENGGER / BROMO</div>
+                                    <div class="text-xs">±180 km • 5–7 jam</div>
+                                </div>
+                            </div>
+                            <div class="px-5 py-4 flex justify-between text-sm">
+                                <div>Jombang → Sunrise Point</div>
+                                <i data-lucide="arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass border border-[#2d5a45]/20 rounded-3xl p-6 mb-6">
+                        <div class="font-bold mb-4 flex items-center gap-x-2 text-lg">
+                            <i data-lucide="calculator"></i> 
+                            <span>ESTIMASI BIAYA & WAKTU</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                            <div>
+                                <label class="text-xs text-[#2d5a45]">Destinasi</label>
+                                <select id="plannerDest" class="w-full px-4 py-3 rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e]">
+                                    <option value="Bali">Bali (8-10 jam)</option>
+                                    <option value="Bromo">Bromo (5-7 jam)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-[#2d5a45]">Jumlah Orang</label>
+                                <input id="plannerPeople" type="number" value="2" min="1" 
+                                       class="w-full px-4 py-3 rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e]">
+                            </div>
+                        </div>
+                        
+                        <button onclick="calculateTourCost()" 
+                                class="w-full py-3 text-sm font-bold rounded-2xl border border-[#1a3c2e] dark:border-[#d4af77] hover:bg-[#1a3c2e] hover:text-white transition-all">
+                            HITUNG ESTIMASI
+                        </button>
+                        
+                        <div id="tourResult" class="mt-4 text-center text-sm hidden"></div>
+                    </div>
+
+                    <button onclick="showToast('DM IG @riz.ubaidillah untuk jadwal touring selanjutnya 🔥')" 
+                            class="w-full py-3.5 text-sm font-bold rounded-2xl border border-[#2d5a45]/40 hover:bg-[#2d5a45]/10 transition-all">
+                        NEXT DESTINATION?
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 z-[999] max-w-[460px] mx-auto bg-[#f8f5ed]/95 dark:bg-[#0a1f14]/95 border-t border-[#2d5a45]/20 backdrop-blur-2xl">
+        <div class="flex items-center justify-around px-2 py-2.5">
+            <div onclick="goToSlide(0)" class="nav-bottom flex flex-col items-center px-4 py-1 active:scale-95" data-slide="0">
+                <i data-lucide="user" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Home</span>
+            </div>
+            <div onclick="goToSlide(1)" class="nav-bottom flex flex-col items-center px-4 py-1 active:scale-95" data-slide="1">
+                <i data-lucide="award" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Skills</span>
+            </div>
+            <div onclick="goToSlide(2)" class="nav-bottom flex flex-col items-center px-4 py-1 active:scale-95" data-slide="2">
+                <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Projects</span>
+            </div>
+            <div onclick="goToSlide(3)" class="nav-bottom flex flex-col items-center px-4 py-1 active:scale-95" data-slide="3">
+                <i data-lucide="shopping-bag" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Store</span>
+            </div>
+            <div onclick="goToSlide(4)" class="nav-bottom flex flex-col items-center px-4 py-1 active:scale-95" data-slide="4">
+                <i data-lucide="map" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Touring</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="skillModal" onclick="closeSkillModal()" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-5">
+        <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[380px] rounded-3xl p-7 border border-[#2d5a45]/20">
+            <div class="flex justify-between mb-5">
+                <div id="skillModalTitle" class="font-black text-3xl"></div>
+                <button onclick="closeSkillModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div id="skillModalLevel" class="mb-5"></div>
+            <div id="skillModalDesc" class="text-[#2d5a45] dark:text-[#d4d4c8]"></div>
+            <button onclick="closeSkillModal()" class="mt-7 w-full py-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-bold rounded-3xl">SEPAKAT!</button>
+        </div>
+    </div>
+
+    <div id="hireModal" onclick="closeHireModal()" class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-5">
+        <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[400px] rounded-3xl p-8">
+            <div class="text-center mb-6">
+                <div class="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1a3c2e] to-[#2d5a45] flex items-center justify-center mb-4 shadow-xl">
+                    <i data-lucide="send" class="text-white w-7 h-7"></i>
+                </div>
+                <div class="font-black text-3xl">Mari Berkolaborasi</div>
+                <p class="text-xs text-[#2d5a45]">Ceritakan project impianmu</p>
+            </div>
+            
+            <div class="space-y-3">
+                <input id="hireName" placeholder="Nama Lengkap" class="w-full px-5 py-3.5 rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e]">
+                <input id="hireEmail" type="email" placeholder="Email Aktif" class="w-full px-5 py-3.5 rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e]">
+                <textarea id="hireMessage" rows="4" placeholder="Ceritakan project atau kebutuhanmu..." class="w-full px-5 py-3.5 rounded-2xl border border-[#2d5a45]/30 bg-white dark:bg-[#1a3c2e]"></textarea>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeHireModal()" class="flex-1 py-3.5 border border-[#2d5a45]/40 rounded-2xl font-bold">BATAL</button>
+                <button onclick="submitHire()" class="flex-1 py-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-black rounded-2xl">KIRIM PESAN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#0a1f14] text-white px-7 py-4 rounded-3xl text-sm font-bold z-[999] shadow-2xl"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        let mainSwiper;
+        let currentFilter = 'all';
+        let chartInstance = null;
+
+        // Tailwind Script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent-gold', '#d4af77');
+        }
+
+        function initSwiper() {
+            mainSwiper = new Swiper(".swiper-main", {
+                speed: 620,
+                mousewheel: { forceToAxis: true },
+                on: { 
+                    slideChange: () => { 
+                        updateActiveNav(); 
+                        updateBottomNav();
+                        closeNavPanel(); 
+                    } 
+                }
+            });
+            
+            // Initial bottom nav active
+            setTimeout(() => updateBottomNav(), 300);
+        }
+
+        function updateActiveNav() {
+            document.querySelectorAll(".nav-item").forEach((el, i) => {
+                el.classList.toggle("active", i === mainSwiper.activeIndex);
+            });
+        }
+
+        function updateBottomNav() {
+            const activeIndex = mainSwiper.activeIndex;
+            document.querySelectorAll(".nav-bottom").forEach((el, i) => {
+                el.classList.toggle("active", i === activeIndex);
+                if (i === activeIndex) {
+                    el.style.color = document.body.classList.contains('dark') ? '#d4af77' : '#1a3c2e';
+                } else {
+                    el.style.color = '';
+                }
+            });
+        }
+
+        function goToSlide(i) { 
+            mainSwiper.slideTo(i); 
+        }
+
+        // Settings Menu
+        function toggleSettingsMenu() {
+            const existing = document.getElementById('settingsPopup');
+            if (existing) {
+                existing.remove();
+                return;
+            }
+            
+            const popup = document.createElement('div');
+            popup.id = 'settingsPopup';
+            popup.className = 'fixed top-16 right-4 z-[999] glass border border-[#2d5a45]/20 rounded-3xl p-5 shadow-2xl w-[220px]';
+            popup.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-bold text-lg">Settings</div>
+                    <button onclick="this.closest('#settingsPopup').remove()"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div onclick="toggleTheme(); this.closest('#settingsPopup').remove();" class="flex items-center gap-x-3 px-4 py-3.5 rounded-2xl hover:bg-[#1a3c2e]/10 cursor-pointer mb-1">
+                    <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <span class="font-medium">Toggle Dark / Light</span>
+                </div>
+                
+                <div onclick="resetAllAchievements(); this.closest('#settingsPopup').remove();" class="flex items-center gap-x-3 px-4 py-3.5 rounded-2xl hover:bg-[#1a3c2e]/10 cursor-pointer">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    <span class="font-medium">Reset Achievements</span>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle("dark");
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+            
+            // Re-init icons for color change
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+                document.body.classList.add("dark");
+            } else {
+                document.body.classList.remove("dark");
+            }
+
+            window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+                if (!localStorage.getItem("theme")) {
+                    if (e.matches) document.body.classList.add("dark");
+                    else document.body.classList.remove("dark");
+                }
+            });
+        }
+
+        // Typing Animation
+        function startTyping() {
+            const el = document.getElementById("nameText");
+            const text = "MUHAMMAD RIZKY U.";
+            let i = 0;
+            
+            const type = () => {
+                if (i < text.length) {
+                    el.innerHTML = text.substring(0, i + 1);
+                    i++;
+                    setTimeout(type, 85);
+                } else {
+                    el.innerHTML = text + '<span class="animate-pulse text-[#d4af77]">|</span>';
+                }
+            };
+            setTimeout(type, 600);
+        }
+
+        // Sequential Stat Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            
+            counters.forEach((counter, index) => {
+                setTimeout(() => {
+                    const target = +counter.dataset.target;
+                    let current = 0;
+                    const inc = target / 42;
+                    
+                    const timer = setInterval(() => {
+                        current += inc;
+                        if (current >= target) {
+                            counter.innerText = target + (target === 20 ? '' : '');
+                            clearInterval(timer);
+                        } else {
+                            counter.innerText = Math.floor(current);
+                        }
+                    }, 32);
+                }, index * 180);
+            });
+        }
+
+        // Enhanced Bamboo Leaf Particles
+        function createLeafParticles() {
+            const canvas = document.getElementById('leafCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const leaves = [];
+            for (let i = 0; i < 18; i++) {
+                leaves.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * -canvas.height,
+                    size: Math.random() * 15 + 11,
+                    speed: Math.random() * 0.9 + 0.65,
+                    angle: Math.random() * 360,
+                    sway: Math.random() * 0.8 + 0.6
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = document.body.classList.contains('dark') ? '#4a7043' : '#2d5a45';
+                ctx.font = 'bold 15px sans-serif';
+
+                leaves.forEach(leaf => {
+                    ctx.save();
+                    ctx.translate(leaf.x, leaf.y);
+                    ctx.rotate((leaf.angle + Math.sin(Date.now() / 600) * leaf.sway) * Math.PI / 180);
+                    ctx.fillText('🍁', 0, 0); // Diubah dari bambu ke maple jepang sesuai obrolan sebelumnya
+                    ctx.restore();
+
+                    leaf.y += leaf.speed;
+                    leaf.angle += 0.9;
+                    
+                    if (leaf.y > canvas.height + 30) {
+                        leaf.y = -25;
+                        leaf.x = Math.random() * canvas.width;
+                    }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // Live Time
+        function updateLiveTime() {
+            const el = document.getElementById('liveTime');
+            setInterval(() => {
+                const now = new Date();
+                el.innerText = now.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }, 1000);
+        }
+
+        // Skill Modal
+        function showSkillModal(title, level, desc) {
+            const modal = document.getElementById("skillModal");
+            document.getElementById("skillModalTitle").innerText = title;
+            document.getElementById("skillModalLevel").innerHTML = `
+                <div class="flex items-center gap-x-4">
+                    <span class="font-bold text-sm">PROFICIENCY</span>
+                    <div class="flex-1 h-3.5 bg-[#d4d4c8] dark:bg-[#1a3c2e] rounded-full overflow-hidden">
+                        <div class="h-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#d4af77] rounded-full" style="width:${level}%"></div>
+                    </div>
+                    <span class="font-black text-2xl text-[#1a3c2e] dark:text-[#d4af77]">${level}%</span>
+                </div>`;
+            document.getElementById("skillModalDesc").innerText = desc;
+            
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+        
+        function closeSkillModal() {
+            const m = document.getElementById("skillModal");
+            m.classList.remove("flex");
+            m.classList.add("hidden");
+        }
+
+        // Interest Modal
+        function showInterestModal(title, desc) {
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-5";
+            m.innerHTML = `
+                <div class="glass w-full max-w-[380px] rounded-3xl p-7">
+                    <div class="font-black text-3xl mb-4">${title}</div>
+                    <div class="text-[#2d5a45] dark:text-[#d4d4c8] leading-relaxed">${desc}</div>
+                    <button onclick="this.closest('.fixed').remove()" 
+                            class="mt-7 w-full py-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-bold rounded-3xl">NICE!</button>
+                </div>`;
+            document.body.appendChild(m);
+        }
+
+        // Projects Data
+        const projectsData = [
+            { 
+                id: 0, 
+                title: "Bromo Sunrise Cinematic", 
+                category: "VIDEO", 
+                year: "2025", 
+                desc: "Short film 4K sunrise di Bromo. Drone + handheld + cinematic color grading dengan nuansa Jepang.", 
+                tools: "Premiere Pro, CapCut, DaVinci Resolve" 
+            },
+            { 
+                id: 1, 
+                title: "LLorenzio Brand Visuals", 
+                category: "BRAND", 
+                year: "2025", 
+                desc: "Full brand identity + campaign. Logo motion, packaging design, social strategy untuk clothing line.", 
+                tools: "Premiere Pro, After Effects, Figma, Photoshop" 
+            },
+            { 
+                id: 2, 
+                title: "Visual Storytelling Workshop", 
+                category: "WORKSHOP", 
+                year: "Jan 2025", 
+                desc: "Workshop 1 hari bersama 35 anak muda Jombang. Mengajarkan bikin cerita lewat kamera dengan teknik Jepang.", 
+                tools: "CapCut, Canva, Public Speaking" 
+            }
+        ];
+
+        function renderProjects(filtered = projectsData) {
+            const container = document.getElementById('projectsContainer');
+            container.innerHTML = '';
+            
+            filtered.forEach((p, index) => {
+                const div = document.createElement('div');
+                div.className = `project-card glass border border-[#2d5a45]/20 rounded-3xl overflow-hidden cursor-pointer project-item morph-hover`;
+                div.dataset.category = p.category;
+                div.style.animationDelay = `${index * 80}ms`;
+                
+                let imgSrc = "github-project-video.jpg";
+                if (p.id === 1) imgSrc = "github-project-brand.jpg";
+                if (p.id === 2) imgSrc = "github-project-workshop.jpg";
+                
+                div.innerHTML = `
+                    <div class="h-44 bg-zinc-900 relative">
+                        <img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="${p.title}">
+                        <div class="absolute top-4 right-4 px-3.5 py-1 bg-black/75 text-white text-xs font-bold rounded-full">${p.category}</div>
+                        <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    </div>
+                    <div class="p-5">
+                        <div class="font-black text-xl">${p.title}</div>
+                        <div class="text-xs text-[#2d5a45]">${p.year}</div>
+                    </div>`;
+                
+                div.onclick = () => showProjectDetail(p.id);
+                container.appendChild(div);
+            });
+        }
+
+        function filterProjects(cat) {
+            if (cat) currentFilter = cat;
+            
+            const searchVal = document.getElementById('projectSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.project-item');
+            
+            items.forEach(item => {
+                const matchesCat = currentFilter === 'all' || item.dataset.category === currentFilter;
+                const matchesSearch = item.textContent.toLowerCase().includes(searchVal);
+                
+                if (matchesCat && matchesSearch) {
+                    item.style.display = '';
+                    item.style.opacity = '1';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if ((cat === 'all' && btn.textContent === 'ALL') || 
+                    (cat === 'VIDEO' && btn.textContent === 'VIDEO') ||
+                    (cat === 'BRAND' && btn.textContent === 'BRAND') ||
+                    (cat === 'WORKSHOP' && btn.textContent === 'WORKSHOP')) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function showProjectDetail(id) {
+            const p = projectsData.find(x => x.id === id);
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/80 z-[200] flex items-end";
+            
+            let imgSrc = "github-project-video.jpg";
+            if (p.id === 1) imgSrc = "github-project-brand.jpg";
+            if (p.id === 2) imgSrc = "github-project-workshop.jpg";
+            
+            m.innerHTML = `
+                <div class="w-full max-w-[460px] mx-auto bg-[#f8f5ed] dark:bg-[#0a1f14] rounded-t-[3rem] p-7">
+                    <div class="flex justify-between mb-5">
+                        <div>
+                            <div class="font-black text-3xl">${p.title}</div>
+                            <div class="text-xs text-[#2d5a45]">${p.category} • ${p.year}</div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()"><i data-lucide="x"></i></button>
+                    </div>
+                    
+                    <img src="${imgSrc}" class="w-full h-56 object-cover rounded-2xl mb-5" alt="${p.title}">
+                    
+                    <div class="mb-5 text-[#2d5a45] dark:text-[#d4d4c8]">${p.desc}</div>
+                    
+                    <div class="mb-6">
+                        <div class="text-xs text-[#2d5a45]">TOOLS USED</div>
+                        <div class="font-medium">${p.tools}</div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="watchDemo(${id}, this)" class="flex-1 py-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-bold rounded-3xl">LIHAT DEMO</button>
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 py-3.5 border border-[#2d5a45]/40 rounded-3xl font-bold">TUTUP</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(m);
+            lucide.createIcons();
+        }
+
+        function watchDemo(id, btn) {
+            btn.closest('.fixed').remove();
+            
+            const demo = document.createElement("div");
+            demo.className = "fixed inset-0 bg-black/90 z-[250] flex items-center justify-center p-5";
+            demo.innerHTML = `
+                <div class="max-w-[420px] w-full text-center text-white">
+                    <div class="mx-auto w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-6">
+                        <i data-lucide="play" class="w-10 h-10"></i>
+                    </div>
+                    <div class="font-bold text-2xl mb-2">DEMO REEL #${id + 1}</div>
+                    <p class="text-sm opacity-70 mb-8">Video full resolution tersedia di YouTube / Google Drive saya.<br>Untuk presentasi seminar, bayangkan kualitas cinematic 4K 🔥</p>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 py-3.5 border border-white/40 rounded-2xl">TUTUP</button>
+                        <button onclick="showToast('Link video akan dikirim via DM Instagram'); this.closest('.fixed').remove()" class="flex-1 py-3.5 bg-white text-black font-bold rounded-2xl">MINTA LINK</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(demo);
+            lucide.createIcons();
+        }
+
+        function showAllProjectsModal() {
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/80 z-[200] flex items-end";
+            m.innerHTML = `
+                <div class="w-full max-w-[460px] mx-auto bg-[#f8f5ed] dark:bg-[#0a1f14] rounded-t-[3rem] p-6">
+                    <div class="flex justify-between mb-5">
+                        <div class="font-black text-2xl">Semua Project</div>
+                        <button onclick="this.closest('.fixed').remove()"><i data-lucide="x"></i></button>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        ${projectsData.map(p => `
+                            <div onclick="showProjectDetail(${p.id}); this.closest('.fixed').remove()" class="glass p-4 rounded-2xl flex justify-between items-center cursor-pointer">
+                                <div>
+                                    <div class="font-bold">${p.title}</div>
+                                    <div class="text-xs text-[#2d5a45]">${p.category} • ${p.year}</div>
+                                </div>
+                                <i data-lucide="chevron-right"></i>
+                            </div>`).join('')}
+                    </div>
+                </div>`;
+            document.body.appendChild(m);
+            lucide.createIcons();
+        }
+
+        // Achievement System
+        function unlockAchievement(element, id) {
+            if (element.classList.contains('unlocked')) return;
+            
+            element.classList.remove('locked');
+            element.classList.add('unlocked');
+            
+            showToast('Achievement Unlocked! +150 XP 🎋');
+            
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 120,
+                    spread: 70,
+                    origin: { y: 0.65 }
+                });
+            }
+            
+            // Save unlocked state
+            const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+            if (!unlocked.includes(id)) {
+                unlocked.push(id);
+                localStorage.setItem('achievements', JSON.stringify(unlocked));
+            }
+        }
+
+        function resetAllAchievements() {
+            localStorage.removeItem('achievements');
+            document.querySelectorAll('.achievement-badge').forEach(el => {
+                el.classList.remove('unlocked');
+                el.classList.add('locked');
+            });
+            showToast('Achievements reset!');
+        }
+
+        function loadAchievements() {
+            const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+            unlocked.forEach(id => {
+                const el = document.querySelector(`[data-id="${id}"]`);
+                if (el) {
+                    el.classList.remove('locked');
+                    el.classList.add('unlocked');
+                }
+            });
+        }
+
+        // Skill Chart
+        function showSkillChart() {
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-5";
+            m.innerHTML = `
+                <div class="glass w-full max-w-[420px] rounded-3xl p-6">
+                    <div class="flex justify-between mb-5">
+                        <div class="font-black">Skill Mastery Overview</div>
+                        <button onclick="this.closest('.fixed').remove()"><i data-lucide="x"></i></button>
+                    </div>
+                    <canvas id="skillChartCanvas" width="360" height="240"></canvas>
+                </div>`;
+            document.body.appendChild(m);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                const ctx = document.getElementById('skillChartCanvas');
+                if (chartInstance) chartInstance.destroy();
+                
+                chartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['MS Office', 'Video Editing', 'Troubleshooting', 'Data Entry', 'Storytelling'],
+                        datasets: [{
+                            label: 'Current Level',
+                            data: [92, 87, 83, 96, 78],
+                            backgroundColor: 'rgba(212, 175, 119, 0.25)',
+                            borderColor: '#d4af77',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#1a3c2e'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            r: { 
+                                min: 0,
+                                max: 100,
+                                beginAtZero: true,
+                                ticks: {
+                                    display: false
+                                },
+                                angleLines: { 
+                                    color: document.body.classList.contains('dark') ? 'rgba(212, 175, 119, 0.3)' : 'rgba(45, 90, 69, 0.3)' 
+                                }, 
+                                grid: { 
+                                    color: document.body.classList.contains('dark') ? 'rgba(212, 175, 119, 0.15)' : 'rgba(45, 90, 69, 0.15)' 
+                                },
+                                pointLabels: {
+                                    color: document.body.classList.contains('dark') ? '#f8f5ed' : '#1a3c2e',
+                                    font: {
+                                        family: 'Plus Jakarta Sans',
+                                        size: 11,
+                                        weight: 'bold'
+                                    }
+                                }
+                            } 
+                        }
+                    }
+                });
+            }, 320);
+        }
+
+        // Touring Calculator
+        function calculateTourCost() {
+            const dest = document.getElementById('plannerDest').value;
+            const people = parseInt(document.getElementById('plannerPeople').value) || 1;
+            
+            let baseCost = dest === 'Bali' ? 875000 : 435000;
+            let total = baseCost * people;
+            let time = dest === 'Bali' ? '8–10 jam' : '5–7 jam';
+            
+            const res = document.getElementById('tourResult');
+            res.innerHTML = `
+                <div class="p-4 bg-white/80 dark:bg-[#1a3c2e] rounded-2xl border border-[#d4af77]/30">
+                    <div class="font-black text-xl">Rp ${total.toLocaleString('id-ID')}</div>
+                    <div class="text-xs text-[#2d5a45]">untuk ${people} orang • ${dest} • ${time}</div>
+                    <div class="text-[10px] mt-2 text-emerald-600">Termasuk BBM + Tol + Makan</div>
+                </div>`;
+            res.classList.remove('hidden');
+            
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount: 40, spread: 50 });
+            }
+        }
+
+        // Map Modal
+        function openMapModal(dest) {
+            const data = {
+                Bali: { 
+                    route: ["Jombang", "Probolinggo", "Situbondo", "Banyuwangi", "Jembrana", "Denpasar"], 
+                    dist: "±420 km", 
+                    time: "8–10 jam" 
+                },
+                Bromo: { 
+                    route: ["Jombang", "Mojokerto", "Purwodadi", "Tumpang", "Pasir Berbisik", "Sunrise Point"], 
+                    dist: "±180 km", 
+                    time: "5–7 jam" 
+                }
+            }[dest];
+            
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/70 z-[100] flex items-end";
+            m.innerHTML = `
+                <div class="w-full max-w-[460px] mx-auto bg-[#f8f5ed] dark:bg-[#0a1f14] rounded-t-[3rem] p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <div>
+                            <div class="font-black text-3xl">${dest}</div>
+                            <div class="text-xs text-[#2d5a45]">${data.dist} • ${data.time}</div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="text-[#2d5a45]">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-2 mb-6">
+                        ${data.route.map((loc, i) => `
+                            <div class="flex gap-3 items-center">
+                                <div class="w-8 h-8 rounded-xl bg-[#1a3c2e] text-white flex items-center justify-center text-xs font-bold">${i + 1}</div>
+                                <div class="font-medium">${loc}</div>
+                            </div>`).join('')}
+                    </div>
+                    
+                    <a href="https://www.google.com/maps/dir/$${data.route.join('/')}" target="_blank" 
+                       class="block text-center py-3.5 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white font-bold rounded-3xl">
+                        BUKA DI GOOGLE MAPS
+                    </a>
+                </div>`;
+            document.body.appendChild(m);
+            lucide.createIcons();
+        }
+
+        // Hire Modal
+        function openHireModal() { 
+            document.getElementById("hireModal").classList.remove("hidden"); 
+            document.getElementById("hireModal").classList.add("flex"); 
+        }
+        
+        function closeHireModal() { 
+            document.getElementById("hireModal").classList.remove("flex"); 
+            document.getElementById("hireModal").classList.add("hidden"); 
+        }
+
+        function submitHire() {
+            const name = document.getElementById("hireName").value || "Bestie";
+            const email = document.getElementById("hireEmail").value;
+            
+            if (!email) { 
+                showToast("Email wajib diisi untuk follow-up!"); 
+                return; 
+            }
+            
+            closeHireModal();
+            
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount: 220, spread: 95, origin: { y: 0.6 } });
+                setTimeout(() => {
+                    confetti({ particleCount: 120, angle: 55, spread: 65, origin: { x: 0.15 } });
+                }, 280);
+            }
+            
+            showToast(`Terima kasih ${name}! Pesanmu sudah masuk. Aku akan balas dalam 24 jam 🔥`);
+            
+            // Simulate email send
+            console.log('%c[HIRE] Form submitted to backend simulation', 'color:#4a7043');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.innerHTML = msg;
+            t.classList.remove("hidden");
+            t.classList.add("flex", "items-center", "justify-center");
+            
+            setTimeout(() => {
+                t.classList.remove("flex", "items-center", "justify-center");
+                t.classList.add("hidden");
+            }, 3200);
+        }
+
+        // PDF CV Download
+        function downloadCV() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(22);
+            doc.setTextColor(26, 60, 46);
+            doc.text("MUHAMMAD RIZKY UBAIDILLAH", 20, 28);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(45, 90, 69);
+            doc.text("Visual Storyteller • Forest Wanderer | Japanese Forest Edition", 20, 36);
+            doc.text("Jombang, Jawa Timur — Available for Collaboration", 20, 42);
+            
+            doc.setDrawColor(45, 90, 69);
+            doc.line(20, 47, 190, 47);
+            
+            doc.setFontSize(14);
+            doc.setTextColor(26, 60, 46);
+            doc.text("CORE STRENGTHS", 20, 58);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            doc.text("• Video Editing (Premiere Pro, CapCut, DaVinci) — 87%", 20, 66);
+            doc.text("• MS Office Expert + Data Entry — 96%", 20, 72);
+            doc.text("• Troubleshooting & Machine Operation — 83%", 20, 78);
+            
+            doc.setFontSize(14);
+            doc.setTextColor(26, 60, 46);
+            doc.text("EXPERIENCE & HIGHLIGHTS", 20, 92);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            doc.text("PT. Layo Seng Fong (2024–Present) — Assembly Operator", 20, 100);
+            doc.text("CV. Mega Lestari Plasindo — Operator Loom", 20, 106);
+            doc.text("Bromo Sunrise Cinematic • LLorenzio Brand Identity • Workshop Jombang", 20, 112);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(100, 100, 100);
+            doc.text('"More than just visuals — I craft stories that last."', 20, 128);
+            doc.text("Generated • Japanese Forest Ultimate Edition • 2026", 20, 134);
+            
+            doc.save("Rizky_Ubaidillah_Japanese_Forest_CV.pdf");
+            showToast("CV berhasil diunduh! Terima kasih.");
+        }
+
+        // Keyboard Help
+        function showKeyboardHelp() {
+            const m = document.createElement("div");
+            m.className = "fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-5";
+            m.innerHTML = `
+                <div class="glass max-w-[380px] w-full rounded-3xl p-7">
+                    <div class="font-black text-2xl mb-5">Media Sosial & Kontak</div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span class="font-bold">Instagram</span> <span>@riz.ubaidillah</span></div>
+                        <div class="flex justify-between"><span class="font-bold">TikTok</span> <span>@riz.ubaidillah</span></div>
+                        <div class="flex justify-between"><span class="font-bold">LinkedIn</span> <span>riz.ubaidillah</span></div>
+                        <div class="flex justify-between"><span class="font-bold">Facebook</span> <span>Muhammad Rizky</span></div>
+                    </div>
+                    <div class="mt-6 text-xs text-[#2d5a45]">Tekan R untuk random slide • F untuk search project • ? untuk bantuan</div>
+                    <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-3 bg-gradient-to-r from-[#1a3c2e] to-[#2d5a45] text-white rounded-3xl">SEPAKAT!</button>
+                </div>`;
+            document.body.appendChild(m);
+        }
+
+        // Global Keyboard Shortcuts
+        function initKeyboard() {
+            document.addEventListener("keydown", (e) => {
+                if (e.key.toLowerCase() === "r") {
+                    const rand = Math.floor(Math.random() * 5);
+                    mainSwiper.slideTo(rand);
+                }
+                
+                if (e.key.toLowerCase() === "f") {
+                    const search = document.getElementById("projectSearch");
+                    if (search) {
+                        search.focus();
+                        e.preventDefault();
+                    }
+                }
+                
+                if (e.key === "?") {
+                    showKeyboardHelp();
+                    e.preventDefault();
+                }
+                
+                if (e.key === "Escape") {
+                    document.querySelectorAll(".fixed").forEach(el => el.remove());
+                }
+                
+                if (e.metaKey && e.key === "k") {
+                    e.preventDefault();
+                    const search = document.getElementById("projectSearch");
+                    if (search) search.focus();
+                }
+            });
+            
+            // Scroll progress
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                document.getElementById('scrollProgress').style.width = `${Math.min(scrollPercent, 100)}%`;
+            });
+        }
+
+        // Vanilla Tilt
+        function initTilt() {
+            setTimeout(() => {
+                document.querySelectorAll('.tilt-card').forEach(card => {
+                    VanillaTilt.init(card, { 
+                        max: 14, 
+                        speed: 420, 
+                        glare: true, 
+                        "max-glare": 0.18 
+                    });
+                });
+            }, 900);
+        }
+
+        // Sequential Reveal on Load
+        function initSequentialAnimations() {
+            const staggerEls = document.querySelectorAll('.stagger-animate');
+            staggerEls.forEach((el, i) => {
+                el.style.animationDelay = `${200 + (i * 180)}ms`;
+            });
+            
+            // Skill bars animation on view
+            setTimeout(() => {
+                document.querySelectorAll('.skill-bar').forEach((bar, i) => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.transition = 'width 1.1s cubic-bezier(0.23, 1, 0.32, 1)';
+                        bar.style.width = width;
+                    }, i * 180);
+                });
+            }, 1200);
+        }
+
+        // Main Init
+        function init() {
+            initTailwind();
+            initSwiper();
+            loadTheme();
+            startTyping();
+            lucide.createIcons();
+            createLeafParticles();
+            updateLiveTime();
+            animateCounters();
+            renderProjects();
+            initTilt();
+            initKeyboard();
+            initSequentialAnimations();
+            loadAchievements();
+
+            // Set initial filter active state
+            setTimeout(() => {
+                const firstBtn = document.querySelector('.filter-btn');
+                if (firstBtn) firstBtn.classList.add('active');
+            }, 650);
+
+            // Easter egg console
+            console.log('%c[ULTIMATE] Japanese Forest Portfolio v4.2 — Production Ready • Seminar Edition 🔥', 'color:#4a7043; font-size:9px');
+
+            // Auto sync bottom nav on load
+            setTimeout(() => {
+                updateBottomNav();
+            }, 400);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
